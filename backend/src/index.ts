@@ -16,6 +16,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
+const SUPPORT_RECIPIENT = process.env.SUPPORT_RECIPIENT || 'reymelpogi03@gmail.com';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -163,7 +164,7 @@ app.post('/contact-support', async (req, res) => {
 
     await transporter.sendMail({
       from: process.env.MAIL_USER,
-      to: 'reymelaquino9@gmail.com',
+      to: SUPPORT_RECIPIENT,
       replyTo: trimmedEmail,
       subject: 'New Contact Support Message',
       text: `
