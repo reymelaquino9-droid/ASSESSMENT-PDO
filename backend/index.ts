@@ -5,8 +5,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
-import { createContactSupportRouter } from './routes/contactSupport';
-
 
 dotenv.config();
 
@@ -16,18 +14,9 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
-const SUPPORT_RECIPIENT = process.env.SUPPORT_RECIPIENT || '';
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
 
 mongoose.connect(MONGO_URI, {
-  serverSelectionTimeoutMS: 5000, 
+  serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
 })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('MongoDB Connection Error:', err));
@@ -36,15 +25,7 @@ app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
 
-app.use(
-  '/contact-support',
-  createContactSupportRouter({
-    supportRecipient: SUPPORT_RECIPIENT,
-    mailUser: process.env.MAIL_USER,
-    transporter,
-  })
-);
-
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+

@@ -15,10 +15,6 @@ const initialForm: FormData = {
   message: '',
 }
 
-const namePattern = /^[\p{L}][\p{L}\s'.-]*$/u
-const nameValidationMessage =
-  "Name must start with a letter and can only include letters, spaces, apostrophes, periods, or hyphens."
-
 function SendIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="icon">
@@ -47,7 +43,6 @@ function App() {
     () => !form.name && !form.email && !form.message,
     [form.email, form.message, form.name],
   )
-  const isNameInvalid = form.name.trim().length > 0 && !namePattern.test(form.name.trim())
 
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
@@ -68,26 +63,13 @@ function App() {
     setStatus('sending')
     setErrorMessage('')
 
-    const payload = {
-      name: form.name.trim(),
-      email: form.email.trim(),
-      message: form.message.trim(),
-    }
-
-    if (!namePattern.test(payload.name)) {
-      setStatus('error')
-      setErrorMessage(nameValidationMessage)
-      setFocused('name')
-      return
-    }
-
     try {
       const response = await fetch('http://localhost:5000/contact-support', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(form),
       })
 
       const result = await response.json()
@@ -195,17 +177,9 @@ function App() {
                     onChange={handleChange}
                     onFocus={() => setFocused('name')}
                     onBlur={() => setFocused(null)}
-                    aria-describedby={isNameInvalid ? 'name-error' : undefined}
-                    aria-invalid={isNameInvalid}
                     data-focused={focused === 'name'}
-                    data-invalid={isNameInvalid}
                     required
                   />
-                  {isNameInvalid && (
-                    <p className="field-help" id="name-error">
-                      {nameValidationMessage}
-                    </p>
-                  )}
                 </div>
 
                 <div className="field-group">
@@ -214,7 +188,7 @@ function App() {
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="emel@gmail.com"
+                    placeholder="emel@example.com"
                     value={form.email}
                     onChange={handleChange}
                     onFocus={() => setFocused('email')}

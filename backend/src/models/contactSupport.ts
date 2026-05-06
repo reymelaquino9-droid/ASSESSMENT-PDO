@@ -13,6 +13,12 @@ const ContactSupportSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    recipientEmail: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
     message: {
       type: String,
       required: true,
