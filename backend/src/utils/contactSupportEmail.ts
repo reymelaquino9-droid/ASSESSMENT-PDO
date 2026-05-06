@@ -34,7 +34,7 @@ Message:
 ${message}
 `;
 
-export const createContactSupportEmail = ({
+export const renderContactSupportEmail = (templateHtml: string, {
   name,
   email,
   message,
@@ -44,8 +44,17 @@ export const createContactSupportEmail = ({
   const safeEmail = escapeHtml(email);
   const safeMessage = escapeHtml(message).replace(/\r?\n/g, '<br />');
   const safeSentDate = escapeHtml(sentDate);
+  const safeInitial = safeName.charAt(0).toUpperCase() || 'U';
 
-  return `
+  return templateHtml
+    .replaceAll('{{name}}', safeName)
+    .replaceAll('{{email}}', safeEmail)
+    .replaceAll('{{message}}', safeMessage)
+    .replaceAll('{{sentDate}}', safeSentDate)
+    .replaceAll('{{initial}}', safeInitial);
+};
+
+export const defaultContactSupportEmailHtml = `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -75,16 +84,16 @@ export const createContactSupportEmail = ({
                         <tr>
                           <td width="52" valign="top">
                             <div style="width:42px; height:42px; line-height:42px; border-radius:50%; background:#2563eb; color:#ffffff; text-align:center; font-size:18px; font-weight:700;">
-                              ${safeName.charAt(0).toUpperCase() || 'U'}
+                              {{initial}}
                             </div>
                           </td>
                           <td valign="top">
-                            <p style="margin:0 0 4px; color:#ffffff; font-size:16px; font-weight:700;">${safeName}</p>
-                            <a href="mailto:${safeEmail}" style="color:#93c5fd; font-size:13px; text-decoration:none;">${safeEmail}</a>
+                            <p style="margin:0 0 4px; color:#ffffff; font-size:16px; font-weight:700;">{{name}}</p>
+                            <a href="mailto:{{email}}" style="color:#93c5fd; font-size:13px; text-decoration:none;">{{email}}</a>
                           </td>
                           <td align="right" valign="top">
                             <span style="display:inline-block; padding:4px 10px; border-radius:999px; background:rgba(37,99,235,0.18); color:#bfdbfe; font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;">Support</span>
-                            <p style="margin:8px 0 0; color:#cbd5e1; font-size:11px; line-height:1.4;">${safeSentDate}</p>
+                            <p style="margin:8px 0 0; color:#cbd5e1; font-size:11px; line-height:1.4;">{{sentDate}}</p>
                           </td>
                         </tr>
                       </table>
@@ -95,7 +104,7 @@ export const createContactSupportEmail = ({
                     <td style="padding:22px 20px;">
                       <p style="margin:0 0 10px; color:#94a3b8; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;">Message</p>
                       <div style="color:#dbeafe; font-size:15px; line-height:1.75; word-break:break-word;">
-                        ${safeMessage}
+                        {{message}}
                       </div>
                     </td>
                   </tr>
@@ -104,7 +113,7 @@ export const createContactSupportEmail = ({
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:18px;">
                   <tr>
                     <td style="padding:16px 18px; background:#eff6ff; border-radius:8px; color:#1e3a8a; font-size:13px; line-height:1.6;">
-                      Reply directly to this email to respond to <strong>${safeName}</strong>.
+                      Reply directly to this email to respond to <strong>{{name}}</strong>.
                     </td>
                   </tr>
                 </table>
@@ -116,5 +125,4 @@ export const createContactSupportEmail = ({
     </table>
   </body>
 </html>
-  `;
-};
+`;

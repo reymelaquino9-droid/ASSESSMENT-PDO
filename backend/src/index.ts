@@ -1,50 +1,19 @@
-import dns from 'node:dns';
-dns.setServers(['8.8.8.8', '8.8.4.4']);
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import nodemailer from 'nodemailer';
-import { createContactSupportRouter } from './routes/contactSupport';
+import { createApp } from './app.js';
+import { connectDatabase, env } from './config/index.js';
+import { seedEmailTemplates } from './services/index.js';
 
+const startServer = async () => {
+  await connectDatabase();
+  await seedEmailTemplates();
 
-dotenv.config();
+  const app = createApp();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+  app.listen(env.port, () => {
+    console.log(`Server is running on http://localhost:${env.port}`);
+  });
+};
 
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || '';
-const SUPPORT_RECIPIENT = process.env.SUPPORT_RECIPIENT || '';
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
-
-mongoose.connect(MONGO_URI, {
-  serverSelectionTimeoutMS: 5000, 
-})
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((err) => console.error('MongoDB Connection Error:', err));
-
-app.get('/', (req, res) => {
-  res.send('Backend is running!');
-});
-
-app.use(
-  '/contact-support',
-  createContactSupportRouter({
-    supportRecipient: SUPPORT_RECIPIENT,
-    mailUser: process.env.MAIL_USER,
-    transporter,
-  })
-);
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+startServer().catch((error) => {
+  console.error('Server startup error:', error);
+  process.exit(1);
 });

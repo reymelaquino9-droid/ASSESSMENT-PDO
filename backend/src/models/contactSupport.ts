@@ -13,11 +13,9 @@ const ContactSupportSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    recipientEmail: {
-      type: String,
+    recipientEmails: {
+      type: [String],
       required: true,
-      trim: true,
-      lowercase: true,
     },
     message: {
       type: String,
