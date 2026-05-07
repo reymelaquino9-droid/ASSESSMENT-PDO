@@ -325,75 +325,6 @@
     background 160ms ease;
 }
 
-.verification-panel {
-  display: grid;
-  gap: 10px;
-  margin-top: 2px;
-}
-
-.verification-actions,
-.verification-code-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.verification-code-row input {
-  min-width: 0;
-  flex: 1;
-}
-
-.inline-button {
-  min-height: 42px;
-  flex: 0 0 auto;
-  border: 1px solid rgba(147, 197, 253, 0.42);
-  border-radius: 8px;
-  padding: 0 14px;
-  background: rgba(37, 99, 235, 0.14);
-  color: #bfdbfe;
-  font: inherit;
-  font-size: 0.86rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background 160ms ease,
-    border-color 160ms ease;
-}
-
-.inline-button:hover:not(:disabled) {
-  border-color: rgba(147, 197, 253, 0.78);
-  background: rgba(37, 99, 235, 0.24);
-}
-
-.inline-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.68;
-}
-
-.verification-badge {
-  border-radius: 999px;
-  padding: 4px 9px;
-  background: rgba(34, 197, 94, 0.16);
-  color: #bbf7d0;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.verification-countdown {
-  min-width: 48px;
-  color: #fde68a;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-align: right;
-}
-
-.verification-message {
-  margin: 0;
-  color: #a7f3d0;
-  font-size: 0.78rem;
-  line-height: 1.45;
-}
-
 .field-group textarea {
   min-height: 150px;
   resize: vertical;
@@ -606,13 +537,4 @@
     display: none;
   }
 
-  .verification-actions,
-  .verification-code-row {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .inline-button {
-    width: 100%;
-  }
 }

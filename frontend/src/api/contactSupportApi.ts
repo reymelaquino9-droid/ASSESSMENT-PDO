@@ -31,39 +31,3 @@ export const sendContactSupportMessage = async (form: ContactSupportFormData) =>
 
   return result
 }
-
-export const requestContactSupportVerificationCode = async (email: string) => {
-  const response = await fetch(createApiUrl('/contact-support/verification-code'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email }),
-  })
-
-  const result = (await response.json()) as ContactSupportResponse
-
-  if (!response.ok) {
-    throw new ApiError(result.message || 'Unable to send verification code.', result.code)
-  }
-
-  return result
-}
-
-export const confirmContactSupportVerificationCode = async (email: string, code: string) => {
-  const response = await fetch(createApiUrl('/contact-support/verification-code/confirm'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ code, email }),
-  })
-
-  const result = (await response.json()) as ContactSupportResponse
-
-  if (!response.ok) {
-    throw new ApiError(result.message || 'Unable to verify email.', result.code)
-  }
-
-  return result
-}
