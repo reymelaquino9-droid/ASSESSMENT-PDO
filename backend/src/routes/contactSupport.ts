@@ -10,8 +10,6 @@ export const createContactSupportRouter = () => {
     transporter: createMailTransporter(),
   });
 
-  router.post('/verification-code', controller.requestVerificationCode);
-  router.post('/verification-code/confirm', controller.confirmVerificationCode);
   router.post('/', controller.create);
 
   return router;

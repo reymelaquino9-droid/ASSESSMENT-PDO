@@ -1,18 +1,9 @@
-import { promises as dns } from 'node:dns';
-import { domainToASCII } from 'node:url';
+import { getEmailDomain, hasValidEmailDomain } from './emailValidation.js';
 
 export type ContactSupportPayload = {
   email: string;
   message: string;
   name: string;
-};
-
-export type EmailVerificationPayload = {
-  email: string;
-};
-
-export type EmailVerificationCodePayload = EmailVerificationPayload & {
-  code: string;
 };
 
 type ContactSupportValidationError = {
@@ -24,7 +15,6 @@ const emailPattern = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@(?:[a-z0-9-]+\.)+[a-z]{2,63
 const maxNameLength = 80;
 const maxEmailLength = 254;
 const maxMessageLength = 2000;
-const fallbackDnsServers = ['8.8.8.8', '1.1.1.1'];
 
 const createValidationError = (code: string, message: string): ContactSupportValidationError => ({
   code,
@@ -43,63 +33,6 @@ export const isContactSupportPayload = (body: unknown): body is ContactSupportPa
     typeof payload.email === 'string' &&
     typeof payload.message === 'string'
   );
-};
-
-export const isEmailVerificationPayload = (body: unknown): body is EmailVerificationPayload => {
-  if (!body || typeof body !== 'object') {
-    return false;
-  }
-
-  const payload = body as Partial<EmailVerificationPayload>;
-
-  return typeof payload.email === 'string';
-};
-
-export const isEmailVerificationCodePayload = (body: unknown): body is EmailVerificationCodePayload => {
-  if (!isEmailVerificationPayload(body)) {
-    return false;
-  }
-
-  const payload = body as Partial<EmailVerificationCodePayload>;
-
-  return typeof payload.code === 'string';
-};
-
-const getEmailDomain = (email: string) => {
-  const domain = email.split('@').at(-1)?.toLowerCase();
-
-  if (!domain) {
-    return null;
-  }
-
-  const asciiDomain = domainToASCII(domain);
-
-  return asciiDomain || null;
-};
-
-const resolveMxRecords = async (domain: string) => {
-  try {
-    return await dns.resolveMx(domain);
-  } catch (error) {
-    const code = error instanceof Error && 'code' in error ? error.code : null;
-
-    if (code !== 'ECONNREFUSED' && code !== 'ETIMEOUT' && code !== 'ESERVFAIL') {
-      throw error;
-    }
-
-    const resolver = new dns.Resolver();
-    resolver.setServers(fallbackDnsServers);
-    return resolver.resolveMx(domain);
-  }
-};
-
-const hasValidEmailDomain = async (domain: string) => {
-  try {
-    const records = await resolveMxRecords(domain);
-    return records.some((record) => record.exchange && record.exchange !== '.');
-  } catch {
-    return false;
-  }
 };
 
 export const getEmailValidationError = async (emailValue: unknown) => {

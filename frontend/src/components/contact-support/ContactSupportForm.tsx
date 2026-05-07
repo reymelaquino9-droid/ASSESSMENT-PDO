@@ -4,7 +4,6 @@ import type {
   ContactSupportFieldErrors,
   ContactSupportFormData,
   ContactSupportStatus,
-  EmailVerificationStatus,
 } from '@/types'
 import { maxMessageLength, maxNameLength } from '@/utils'
 
@@ -13,19 +12,11 @@ type ContactSupportFormProps = {
   fieldErrors: ContactSupportFieldErrors
   focused: keyof ContactSupportFormData | null
   form: ContactSupportFormData
-  isEmailVerified: boolean
   status: ContactSupportStatus
-  verificationCode: string
-  verificationMessage: string
-  verificationSecondsLeft: number
-  verificationStatus: EmailVerificationStatus
   onBlur: () => void
   onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  onConfirmVerificationCode: () => void
   onFocus: (field: keyof ContactSupportFormData) => void
-  onRequestVerificationCode: () => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
-  onVerificationCodeChange: (event: ChangeEvent<HTMLInputElement>) => void
 }
 
 export function ContactSupportForm({
@@ -33,39 +24,12 @@ export function ContactSupportForm({
   fieldErrors,
   focused,
   form,
-  isEmailVerified,
   status,
-  verificationCode,
-  verificationMessage,
-  verificationSecondsLeft,
-  verificationStatus,
   onBlur,
   onChange,
-  onConfirmVerificationCode,
   onFocus,
-  onRequestVerificationCode,
   onSubmit,
-  onVerificationCodeChange,
 }: ContactSupportFormProps) {
-  const isRequestingCode = verificationStatus === 'sending'
-  const isVerifyingCode = verificationStatus === 'verifying'
-  const hasRequestedCode =
-    verificationStatus === 'sent' || verificationStatus === 'verifying' || verificationStatus === 'error'
-  const isVerificationCodeExpired = hasRequestedCode && verificationSecondsLeft <= 0
-  const showVerificationCodeInput =
-    verificationStatus === 'sent' ||
-    verificationStatus === 'verifying' ||
-    (verificationStatus === 'error' && !isVerificationCodeExpired)
-  const verificationButtonText = isEmailVerified
-    ? 'Email Verified'
-    : isRequestingCode
-      ? 'Sending Code...'
-      : hasRequestedCode
-        ? 'Resend Code'
-        : 'Verify Email'
-  const minutesLeft = Math.floor(verificationSecondsLeft / 60)
-  const secondsLeft = String(verificationSecondsLeft % 60).padStart(2, '0')
-
   return (
     <>
       <div className="form-heading">
@@ -126,60 +90,6 @@ export function ContactSupportForm({
               {fieldErrors.email}
             </p>
           )}
-
-          <div className="verification-panel" data-status={verificationStatus}>
-            <div className="verification-actions">
-              <button
-                type="button"
-                className="inline-button"
-                onClick={onRequestVerificationCode}
-                disabled={isRequestingCode || isVerifyingCode || isEmailVerified || verificationSecondsLeft > 0}
-              >
-                {verificationButtonText}
-              </button>
-              {isEmailVerified && <span className="verification-badge">Verified</span>}
-              {!isEmailVerified && hasRequestedCode && verificationSecondsLeft > 0 && (
-                <span className="verification-countdown">
-                  {minutesLeft}:{secondsLeft}
-                </span>
-              )}
-            </div>
-
-            {!isEmailVerified && showVerificationCodeInput && (
-              <div className="verification-code-row">
-                <input
-                  id="verificationCode"
-                  aria-describedby={fieldErrors.verificationCode ? 'verification-code-error' : undefined}
-                  aria-invalid={Boolean(fieldErrors.verificationCode)}
-                  inputMode="numeric"
-                  name="verificationCode"
-                  pattern="[0-9]*"
-                  placeholder="6-digit code"
-                  type="text"
-                  value={verificationCode}
-                  onChange={onVerificationCodeChange}
-                  data-invalid={Boolean(fieldErrors.verificationCode)}
-                />
-                <button
-                  type="button"
-                  className="inline-button"
-                  onClick={onConfirmVerificationCode}
-                  disabled={isRequestingCode || isVerifyingCode || isVerificationCodeExpired}
-                >
-                  {isVerifyingCode ? 'Checking...' : 'Verify'}
-                </button>
-              </div>
-            )}
-
-            {fieldErrors.verificationCode && (
-              <p className="field-help" id="verification-code-error">
-                {fieldErrors.verificationCode}
-              </p>
-            )}
-            {verificationMessage && !fieldErrors.verificationCode && (
-              <p className="verification-message">{verificationMessage}</p>
-            )}
-          </div>
         </div>
 
         <div className="field-group">
@@ -214,9 +124,9 @@ export function ContactSupportForm({
 
         {status === 'error' && errorMessage && <p className="form-error">{errorMessage}</p>}
 
-        <button type="submit" className="submit-button" disabled={status === 'sending' || !isEmailVerified}>
+        <button type="submit" className="submit-button" disabled={status === 'sending'}>
           <SendIcon />
-          {status === 'sending' ? 'Sending...' : isEmailVerified ? 'Send Message' : 'Verify Email to Send'}
+          {status === 'sending' ? 'Sending...' : 'Send Message'}
         </button>
       </form>
     </>

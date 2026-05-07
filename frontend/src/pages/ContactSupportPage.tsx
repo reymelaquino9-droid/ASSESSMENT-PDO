@@ -21,19 +21,11 @@ export function ContactSupportPage() {
               fieldErrors={supportForm.fieldErrors}
               focused={supportForm.focused}
               form={supportForm.form}
-              isEmailVerified={supportForm.isEmailVerified}
               status={supportForm.status}
-              verificationCode={supportForm.verificationCode}
-              verificationMessage={supportForm.verificationMessage}
-              verificationSecondsLeft={supportForm.verificationSecondsLeft}
-              verificationStatus={supportForm.verificationStatus}
               onBlur={supportForm.handleBlur}
               onChange={supportForm.handleChange}
-              onConfirmVerificationCode={supportForm.handleConfirmVerificationCode}
               onFocus={supportForm.handleFocus}
-              onRequestVerificationCode={supportForm.handleRequestVerificationCode}
               onSubmit={supportForm.handleSubmit}
-              onVerificationCodeChange={supportForm.handleVerificationCodeChange}
             />
           )}
         </section>
